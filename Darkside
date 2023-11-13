@@ -1,8 +1,8 @@
 --Script
-getgenv().WalkSpeedValue = 1000; --Enter your speed amount here
+getgenv().SizeValue = 0.1; --Enter your speed amount here
 local Player = game:service'Players'.LocalPlayer;
-Player.Character.Humanoid:GetPropertyChangedSignal'WalkSpeed':Connect(function()
-Player.Character.Humanoid.WalkSpeed = getgenv().WalkSpeedValue;
+Player.Character.Humanoid:GetPropertyChangedSignal'Size':Connect(function()
+Player.Character.Humanoid.Size = getgenv().SizeValue;
 end)
-Player.Character.Humanoid.WalkSpeed = getgenv().WalkSpeedValue;
+Player.Character.Humanoid.Size = getgenv().SizeValue;
 
