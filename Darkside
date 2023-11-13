@@ -1,8 +1,7 @@
---Script
-getgenv().SizeValue = 0.1; --Enter your speed amount here
-local Player = game:service'Players'.LocalPlayer;
-Player.Character.Humanoid:GetPropertyChangedSignal'Size':Connect(function()
-Player.Character.Humanoid.Size = getgenv().SizeValue;
-end)
-Player.Character.Humanoid.Size = getgenv().SizeValue;
-
+local ScreenGui = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local UICorner = Instance.new("UICorner")
+local TextButton = Instance.new("TextButton")
+local UICorner_2 = Instance.new("UICorner")
+local TextButton_2 = Instance.new("TextButton")
+local UICorner_3 = Instance.new("UICorner")
