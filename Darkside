@@ -1,0 +1,6 @@
+SpeedUp (part)
+Humanoid = part.Parent: FindFirstChild (“humanoid”)
+Humanoid
+Humanoid. WalkSpeed = 60
+Humanoid. Jump height = 20
+Script.Parent . Touched: Connect (SpeedUp)
