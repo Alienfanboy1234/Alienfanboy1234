@@ -1,6 +1,8 @@
-SpeedUp (part)
-Humanoid = part.Parent: FindFirstChild (“humanoid”)
-Humanoid
-Humanoid. WalkSpeed = 60
-Humanoid. Jump height = 20
-Script.Parent . Touched: Connect (SpeedUp)
+--Script
+getgenv().WalkSpeedValue = 1000; --Enter your speed amount here
+local Player = game:service'Players'.LocalPlayer;
+Player.Character.Humanoid:GetPropertyChangedSignal'WalkSpeed':Connect(function()
+Player.Character.Humanoid.WalkSpeed = getgenv().WalkSpeedValue;
+end)
+Player.Character.Humanoid.WalkSpeed = getgenv().WalkSpeedValue;
+
