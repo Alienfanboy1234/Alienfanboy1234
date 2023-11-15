@@ -1,85 +1,126 @@
-local Window = Rayfield:CreateWindow({
-   Name = "Rayfield Example Window",
-   LoadingTitle = "Rayfield Interface Suite",
-   LoadingSubtitle = "by Sirius",
-   ConfigurationSaving = {
-      Enabled = true,
-      FolderName = nil, -- Create a custom folder for your hub/game
-      FileName = "Big Hub"
-   },
-   Discord = {
-      Enabled = false,
-      Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ABCD would be ABCD
-      RememberJoins = true -- Set this to false to make them join the discord every time they load it up
-   },
-   KeySystem = false, -- Set this to true to use our key system
-   KeySettings = {
-      Title = "Untitled",
-      Subtitle = "Key System",
-      Note = "No method of obtaining the key is provided",
-      FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
-      SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
-      GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
-      Key = {"Hello"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
-   }
-})
-local Tab = Window:CreateTab("Tab Example", 4522347649) -- Title, Image
-local Section = Tab:CreateSection("Section Example")
-Section:Set("Section Example")
-Rayfield:Destroy()
-local Toggle = Tab:CreateToggle({
-   Name = "Toggle Example",
-   CurrentValue = false,
-   Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-   Callback = function(Value)
-   -- The function that takes place when the toggle is pressed
-   -- The variable (Value) is a boolean on whether the toggle is true or false
-   end,
-})
-Toggle:Set(false)
-local ColorPicker = Tab:CreateColorPicker({
-    Name = "Color Picker",
-    Color = Color3.fromRGB(255,255,255),
-    Flag = "ColorPicker1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-    Callback = function(Value)
-        -- The function that takes place every time the color picker is moved/changed
-        -- The variable (Value) is a Color3fromRGB value based on which color is selected
-    end
-})
-Slider:Set(10) -- The new slider integer value
-local Input = Tab:CreateInput({
-   Name = "Input Example",
-   PlaceholderText = "Input Placeholder",
-   RemoveTextAfterFocusLost = false,
-   Callback = function(Text)
-   -- The function that takes place when the input is changed
-   -- The variable (Text) is a string for the value in the text box
-   end,
-})
-local Dropdown = Tab:CreateDropdown({
-   Name = "Dropdown Example",
-   Options = {"Option 1","Option 2"},
-   CurrentOption = {"Option 1"},
-   MultipleOptions = false,
-   Flag = "Dropdown1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-   Callback = function(Option)
-   -- The function that takes place when the selected option is changed
-   -- The variable (Option) is a table of strings for the current selected options
-   end,
-})
-Dropdown:Set({"Option 2"}) -- The new list of options
-local Keybind = Tab:CreateKeybind({
-   Name = "Keybind Example",
-   CurrentKeybind = "Q",
-   HoldToInteract = false,
-   Flag = "Keybind1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-   Callback = function(Keybind)
-   -- The function that takes place when the keybind is pressed
-   -- The variable (Keybind) is a boolean for whether the keybind is being held or not (HoldToInteract needs to be true)
-   end,
-})
-Keybind:Set("RightCtrl") -- Keybind (string)
-local Label = Tab:CreateLabel("Label Example")
-Label:Set("Label Example")
-local Paragraph = Tab:CreateParagraph({Title = "Paragraph Example", Content = "Paragraph Example"})
-Paragraph:Set({Title = "Paragraph Example", Content = "Paragraph Example"})
+local camera = game.Workspace.CurrentCamera;
+
+local character = game.Players.LocalPlayer.CharacterAdded:Wait();
+local hrp = character:WaitForChild("HumanoidRootPart");
+local humanoid = character:WaitForChild("Humanoid");
+local animate = character:WaitForChild("Animate");
+
+while (not character.Parent) do character.AncestryChanged:Wait(); end
+local idleAnim = humanoid:LoadAnimation(script:WaitForChild("IdleAnim"));
+local moveAnim = humanoid:LoadAnimation(script:WaitForChild("MoveAnim"));
+local RunAnim = humanoid:LoadAnimation(script:WaitForChild("RunAnim"));
+local lastAnim = idleAnim;
+
+local bodyGyro = Instance.new("BodyGyro");
+bodyGyro.maxTorque = Vector3.new(1, 1, 1)*10^6;
+bodyGyro.P = 10^6;
+
+local bodyVel = Instance.new("BodyVelocity");
+bodyVel.maxForce = Vector3.new(1, 1, 1)*10^6;
+bodyVel.P = 10^4;
+
+local Attach = Instance.new("Attachment")
+local Attack2 = Attach:Clone()
+
+local isFlying = false;
+local movement = {forward = 0, backward = 0, right = 0, left = 0};
+local mouse = game.Players.LocalPlayer:GetMouse()
+local function Running(Key ,gameprocesed)
+	if hrp:FindFirstChild("BodyVelocity") then
+	if Key.KeyCode == Enum.KeyCode.LeftShift and gameprocesed == false then
+		character.Humanoid.WalkSpeed = 40
+		script.Assets.FormAura:Clone().Parent = hrp
+		local trail = script.Assets.Trail:Clone()
+		local part = script.Assets.Effect:Clone()
+		part.Parent = hrp
+			part.CFrame = hrp.CFrame
+			part.ParticleEmitter.Parent = Attach
+		part.Weld.Part1 = hrp
+		trail.Attachment0 = Attach
+		trail.Attachment1 = Attack2
+		trail.Parent = hrp
+		Attach.Parent = hrp
+		Attack2.Parent = character.LowerTorso
+		RunAnim:Play()
+		end
+	end
+end
+local function StopRun(Key, Gameprocesed)
+	if hrp:FindFirstChild("BodyVelocity") then
+	if Key.KeyCode == Enum.KeyCode.LeftShift and Gameprocesed == false then
+		character.Humanoid.WalkSpeed = 16
+		hrp:FindFirstChild("FormAura"):Destroy()
+		hrp.Effect:Destroy()
+		character.LowerTorso.Attachment.Parent = nil
+		hrp.Attachment.Parent = nil
+		hrp.Trail:Destroy()
+		RunAnim:Stop()
+		lastAnim:Play()
+		end
+	end
+end
+local function setFlying(flying)
+	isFlying = flying;
+	bodyGyro.Parent = isFlying and hrp or nil;
+	bodyVel.Parent = isFlying and hrp or nil;
+	bodyGyro.CFrame = hrp.CFrame;
+	bodyVel.Velocity = Vector3.new();
+	animate.Disabled = isFlying;
+	if (isFlying) then
+		lastAnim = idleAnim;
+		lastAnim:Play();
+	else
+		lastAnim:Stop();
+	end
+end
+
+local function onUpdate(dt)
+	if (isFlying) then
+		local cf = mouse.Hit;
+		local direction = cf.rightVector*(movement.right - movement.left) + cf.lookVector*(movement.forward - movement.backward);
+		if (direction:Dot(direction) > 0) then
+			direction = direction.unit;
+		end
+		bodyGyro.CFrame = cf;
+		bodyVel.Velocity = direction * humanoid.WalkSpeed * 4;
+	end
+end
+	
+local function onKeyPress(input, gameProcessedEvent)
+	if input.KeyCode == Enum.KeyCode.F and gameProcessedEvent == false then
+		if (not humanoid or humanoid:GetState() == Enum.HumanoidStateType.Dead) then
+				return;
+		end
+		for i, v in pairs(humanoid:GetPlayingAnimationTracks()) do
+			v:Stop()
+		end
+		setFlying(not isFlying)
+	end
+end
+
+local function movementBind(actionName, inputState, inputObject)
+	if (inputState == Enum.UserInputState.Begin) then
+		movement[actionName] = 1;
+	elseif (inputState == Enum.UserInputState.End) then
+		movement[actionName] = 0;
+	end
+	if (isFlying) then
+		local isMoving = movement.right + movement.left + movement.forward + movement.backward > 0;
+		local nextAnim = isMoving and moveAnim or idleAnim;
+		if (nextAnim ~= lastAnim) then
+			lastAnim:Stop();
+			lastAnim = nextAnim;
+			lastAnim:Play();
+		end
+	end
+	return Enum.ContextActionResult.Pass;
+end
+
+game:GetService("UserInputService").InputBegan:Connect(onKeyPress)
+game:GetService("UserInputService").InputBegan:Connect(Running)
+game:GetService("UserInputService").InputEnded:Connect(StopRun)
+game:GetService("ContextActionService"):BindAction("forward", movementBind, false, Enum.PlayerActions.CharacterForward);
+game:GetService("ContextActionService"):BindAction("backward", movementBind, false, Enum.PlayerActions.CharacterBackward);
+game:GetService("ContextActionService"):BindAction("left", movementBind, false, Enum.PlayerActions.CharacterLeft);
+game:GetService("ContextActionService"):BindAction("right", movementBind, false, Enum.PlayerActions.CharacterRight);
+game:GetService("RunService").RenderStepped:Connect(onUpdate)
